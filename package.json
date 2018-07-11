@@ -1,0 +1,26 @@
+{
+  "name": "api_generator",
+  "version": "1.0.0",
+  "description": "Module to generate api controllers and routes based on Sequelize models.",
+  "preferGlobal": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "apigen": "index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bruno-sartori/api_generator.git"
+  },
+  "keywords": [
+    "api",
+    "generator"
+  ],
+  "author": "Bruno Sartori <brunosartori.webmaster@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bruno-sartori/api_generator/issues"
+  },
+  "homepage": "https://github.com/bruno-sartori/api_generator#readme"
+}
