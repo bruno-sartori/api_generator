@@ -1,6 +1,8 @@
 class Generator {
-	constructor() {
-		this.modelName = '';
+	constructor(modelPath) {
+
+		this.modelPath = modelPath;
+		this.modelName = null;
 		this.modelValues = [];
 	}
 
@@ -25,3 +27,5 @@ class Generator {
 		this.modelValues.push({ name: valueName });
 	}
 }
+
+export default Generator;
