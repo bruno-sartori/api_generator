@@ -9,9 +9,16 @@ class TestGenerator {
 	}
 
 	async createFoldersAndHelperFiles() {
-			await shell.rm('-rf', this.testsPath);
-			setTimeout(null, 200);
-			await fs.mkdirSync(this.testsPath);
+		try {
+			console.log(fs.existsSync(this.testsPath));
+
+			if (!fs.existsSync(this.testsPath)) {
+				await fs.mkdirSync(this.testsPath);
+			} else {
+				await shell.rm('-rf', this.testsPath);
+				await fs.mkdirSync(this.testsPath);
+			}
+
 			await fs.mkdirSync(path.join(this.testsPath, '/integration'));
 			await fs.mkdirSync(path.join(this.testsPath, '/integration/routes'));
 			await fs.mkdirSync(path.join(this.testsPath, '/unit'));
@@ -20,79 +27,83 @@ class TestGenerator {
 			await fs.mkdirSync(path.join(this.testsPath, '/contract/contracts'));
 
 			await Promise.all([this.createIntegrationHelpers(), this.createUnitHelpers(), this.createContractHelpers()]);
+
+			return true;
+		} catch (error) {
+			throw new Error(error);
+		}
 	}
 
 	async createIntegrationHelpers() {
-		let stream = fs.createWriteStream(path.join(this.testsPath, '/integration/helpers.js'));
-		stream.once('open', (fd) => {
-			stream.write(`import supertest from 'supertest';\n`);
-			stream.write(`import chai from 'chai';\n`);
-			stream.write(`import app from '../../src/app.js';\n\n`);
-			stream.write(`global.app = app;\n`);
-			stream.write(`global.request = supertest(app);\n`);
-			stream.write(`global.expect = chai.expect;\n`);
-			stream.end();
+		const helperStream = fs.createWriteStream(path.join(this.testsPath, '/integration/helpers.js'));
+		helperStream.once('open', (fd) => {
+			helperStream.write(`import supertest from 'supertest';\n`);
+			helperStream.write(`import chai from 'chai';\n`);
+			helperStream.write(`import app from '../../src/app.js';\n\n`);
+			helperStream.write(`global.app = app;\n`);
+			helperStream.write(`global.request = supertest(app);\n`);
+			helperStream.write(`global.expect = chai.expect;\n`);
+			helperStream.end();
 		});
 
-		stream = fs.createWriteStream(path.join(this.testsPath, '/integration/mocha.opts'));
-		stream.once('open', (fd) => {
-			stream.write(`--require test/integration/helpers.js\n`);
-			stream.write(`--reporter spec\n`);
-			stream.write(`--compilers js:babel-core/register\n`);
-			stream.write(`--slow 5000\n`);
-			stream.end();
+		const optsStream = fs.createWriteStream(path.join(this.testsPath, '/integration/mocha.opts'));
+		optsStream.once('open', (fd) => {
+			optsStream.write(`--require test/integration/helpers.js\n`);
+			optsStream.write(`--reporter spec\n`);
+			optsStream.write(`--compilers js:babel-core/register\n`);
+			optsStream.write(`--slow 5000\n`);
+			optsStream.end();
 		});
 	}
 
 	async createUnitHelpers() {
-		let stream = fs.createWriteStream(path.join(this.testsPath, '/unit/helpers.js'));
-		stream.once('open', (fd) => {
-			stream.write(`import chai from 'chai';\n`);
-			stream.write(`import td from 'testdouble';\n\n`);
-			stream.write(`global.expect = chai.expect;\n`);
-			stream.write(`global.td = td;\n`);
-			stream.end();
+		const helperStream = fs.createWriteStream(path.join(this.testsPath, '/unit/helpers.js'));
+		helperStream.once('open', (fd) => {
+			helperStream.write(`import chai from 'chai';\n`);
+			helperStream.write(`import td from 'testdouble';\n\n`);
+			helperStream.write(`global.expect = chai.expect;\n`);
+			helperStream.write(`global.td = td;\n`);
+			helperStream.end();
 		});
 
-		stream = fs.createWriteStream(path.join(this.testsPath, '/unit/mocha.opts'));
-		stream.once('open', (fd) => {
-			stream.write(`--require test/unit/helpers.js\n`);
-			stream.write(`--reporter spec\n`);
-			stream.write(`--compilers js:babel-core/register\n`);
-			stream.write(`--slow 5000\n`);
-			stream.end();
+		const optsStream = fs.createWriteStream(path.join(this.testsPath, '/unit/mocha.opts'));
+		optsStream.once('open', (fd) => {
+			optsStream.write(`--require test/unit/helpers.js\n`);
+			optsStream.write(`--reporter spec\n`);
+			optsStream.write(`--compilers js:babel-core/register\n`);
+			optsStream.write(`--slow 5000\n`);
+			optsStream.end();
 		});
 	}
 
 	async createContractHelpers() {
-		let stream = fs.createWriteStream(path.join(this.testsPath, '/contract/helpers.js'));
-		stream.once('open', (fd) => {
-			stream.write(`import supertest from 'supertest';\n`);
-			stream.write(`import chai from 'chai';\n`);
-			stream.write(`import Joi from 'joi';\n`);
-			stream.write(`import joiAssert from 'joi-assert';\n`);
-			stream.write(`import app from '../../src/app.js';\n\n`);
-			stream.write(`global.app = app;\n`);
-			stream.write(`global.request = supertest(app);\n`);
-			stream.write(`global.expect = chai.expect;\n`);
-			stream.write(`global.Joi = joi;\n`);
-			stream.write(`global.joiAssert = joiAssert;\n`);
-			stream.end();
+		const helperStream = fs.createWriteStream(path.join(this.testsPath, '/contract/helpers.js'));
+		helperStream.once('open', (fd) => {
+			helperStream.write(`import supertest from 'supertest';\n`);
+			helperStream.write(`import chai from 'chai';\n`);
+			helperStream.write(`import Joi from 'joi';\n`);
+			helperStream.write(`import joiAssert from 'joi-assert';\n`);
+			helperStream.write(`import app from '../../src/app.js';\n\n`);
+			helperStream.write(`global.app = app;\n`);
+			helperStream.write(`global.request = supertest(app);\n`);
+			helperStream.write(`global.expect = chai.expect;\n`);
+			helperStream.write(`global.Joi = joi;\n`);
+			helperStream.write(`global.joiAssert = joiAssert;\n`);
+			helperStream.end();
 		});
 
-		stream = fs.createWriteStream(path.join(this.testsPath, '/contract/mocha.opts'));
-		stream.once('open', (fd) => {
-			stream.write(`--require test/contract/helpers.js\n`);
-			stream.write(`--reporter spec\n`);
-			stream.write(`--compilers js:babel-core/register\n`);
-			stream.write(`--slow 5000\n`);
-			stream.end();
+		const optsStream = fs.createWriteStream(path.join(this.testsPath, '/contract/mocha.opts'));
+		optsStream.once('open', (fd) => {
+			optsStream.write(`--require test/contract/helpers.js\n`);
+			optsStream.write(`--reporter spec\n`);
+			optsStream.write(`--compilers js:babel-core/register\n`);
+			optsStream.write(`--slow 5000\n`);
+			optsStream.end();
 		});
 	}
 
 
 	async generate(modelName, modelValues) {
-		await this.createFoldersAndHelperFiles();
 		await Promise.all([this.generateIntegration(modelName, modelValues)]);//, this.generateUnit(), this.generateContract()]);
 	}
 
@@ -156,6 +167,7 @@ class TestGenerator {
 		const objVar = this.camelize(modelName).substring(0, this.camelize(modelName).length -1);
 
 		const stream = fs.createWriteStream(path.join(this.testsPath, `/integration/routes/${modelName}.js`));
+
 		stream.once('open', (fd) => {
 			stream.write(`import HttpStatus from 'http-status';\n`);
 			stream.write(`import jwt from 'jwt-simple';\n\n`);

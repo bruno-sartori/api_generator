@@ -33,6 +33,10 @@ class SequelizeParser {
 		this.modelValues = modelValues;
 	}
 
+	async createFoldersAndHelperFiles() {
+		await this.testGenerator.createFoldersAndHelperFiles();
+	}
+
 	async parseModels() {
 		const regexModelName = new RegExp(/sequelize\.define/, 'g');
 		const regexValueName = new RegExp(/(?!.* DataType).+?(?=\:)/);

@@ -34,5 +34,6 @@ async function generate() {
 			process.exit(1);
 	}
 
+	await parser.createFoldersAndHelperFiles();
 	await parser.parseModels();
 }
