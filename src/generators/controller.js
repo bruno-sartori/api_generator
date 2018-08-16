@@ -8,6 +8,7 @@ class ControllerGenerator {
 	}
 
 	async generateFile(modelName, modelValues) {
+		console.log(`Generating Controller: ${modelName}`);
 		const stream = fs.createWriteStream(path.join(this.controllersPath, `${modelName}.js`));
 
 		stream.once('open', (fd) => {

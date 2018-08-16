@@ -10,8 +10,7 @@ class TestGenerator {
 
 	async createFoldersAndHelperFiles() {
 		try {
-			console.log(fs.existsSync(this.testsPath));
-
+			
 			if (!fs.existsSync(this.testsPath)) {
 				await fs.mkdirSync(this.testsPath);
 			} else {
@@ -116,7 +115,6 @@ class TestGenerator {
 				case 'STRING':
 					return Math.random().toString(36).substring(7);
 				default:
-				console.log(type);
 					return Math.random().toString(36).substring(7);
 					break;
 			}

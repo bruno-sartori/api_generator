@@ -8,6 +8,8 @@ class RouteGenerator {
 	}
 
 	async generateFile(modelName, modelValues) {
+		console.log(`Generating Route: ${modelName}`);
+
 		const controllerName = `${modelName}Controller`;
 		const controllerVar = `${modelName.charAt(0).toLowerCase() + modelName.slice(1)}Controller`;
 		const routeName = modelName.replace( /([a-z])([A-Z])/g, '$1-$2' ).toLowerCase();
