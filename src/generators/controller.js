@@ -3,12 +3,20 @@ import path from 'path';
 import util from 'util';
 
 class ControllerGenerator {
+
 	constructor(controllersPath) {
 		this.controllersPath = controllersPath;
 	}
 
 	async generateFile(modelName, modelValues) {
 		console.log(`Generating Controller: ${modelName}`);
+
+		const capitalize = (str) => {
+			return str.charAt(0).toUpperCase() + str.slice(1);
+		}
+
+		modelName = capitalize(modelName);
+
 		const stream = fs.createWriteStream(path.join(this.controllersPath, `${modelName}.js`));
 
 		stream.once('open', (fd) => {

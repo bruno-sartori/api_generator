@@ -1,16 +1,20 @@
 import fs from 'fs';
 import path from 'path';
 import util from 'util';
+import shell from 'shelljs';
+import _ from 'lodash';
 import ControllerGenerator from '../generators/controller';
 import RouteGenerator from '../generators/route';
 import TestGenerator from '../generators/test';
 
 class SequelizeParser {
 
-	constructor(modelPath, controllersPath, routesPath, testsPath, sequelize, dbName) {
+	constructor(rootPath, modelPath, controllersPath, routesPath, testsPath, sequelize, dbName) {
 		this.db = sequelize;
 		this.dbName = dbName;
 		this.models = [];
+
+		this.rootPath = rootPath;
 
 		this.modelPath = modelPath;
 		this.controllerGenerator = new ControllerGenerator(controllersPath);
@@ -19,7 +23,13 @@ class SequelizeParser {
 	}
 
 	async createFoldersAndHelperFiles() {
-		await this.testGenerator.createFoldersAndHelperFiles();
+		try {
+			await shell.rm('-rf', `${this.rootPath}/*`);
+			await shell.cp('-r', path.join(__dirname, '../files/*'), this.rootPath);
+			return true;
+		} catch (error) {
+			throw new Error(error);
+		}
 	}
 
 	getType(type) {
@@ -45,7 +55,7 @@ class SequelizeParser {
 			const table = tables[i][`Tables_in_${this.dbName}`];
 			const columns = await this.db.query(`show columns from ${table}`);
 
-			const modelColumns = columns[0].map(o => ({ name: o.Field, type: this.getType(o.Type) }));
+			const modelColumns = await columns[0].map(o => ({ name: o.Field, type: this.getType(o.Type) }));
 
 			this.models.push({ name: table, columns: modelColumns });
 		}
@@ -55,10 +65,11 @@ class SequelizeParser {
 
 	async generateFiles() {
 		for (let i = 0; i < this.models.length; i ++) {
-			await Promise.all([
-				this.controllerGenerator.generateFile(this.models[i].name, this.models[i].columns),
-				this.routeGenerator.generateFile(this.models[i].name, this.models[i].columns),
-				this.testGenerator.generate(this.models[i].name, this.models[i].columns)
+			const modelName = _.camelCase(this.models[i].name);
+ 			await Promise.all([
+				this.controllerGenerator.generateFile(modelName, this.models[i].columns),
+				this.routeGenerator.generateFile(modelName, this.models[i].columns),
+				this.testGenerator.generate(modelName, this.models[i].columns)
 			]);
 		}
 	}

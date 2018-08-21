@@ -1,0 +1,79 @@
+{
+  "extends": "airbnb",
+  "plugins": [
+    "standard"
+  ],
+  "parserOptions": {
+    "ecmaVersion": 8,
+    "sourceType": "module"
+  },
+  "rules": {
+		"no-undef": "off",
+		"no-confusing-arrow": "off",
+		"object-curly-newline": "off",
+		"no-useless-escape": "off",
+		"no-void": "off",
+		"no-tabs": "off",
+		"indent": ["error", "tab", {"SwitchCase": 1, "MemberExpression": 0}],
+		"global-require": "off",
+		"no-nested-ternary": "off",
+    "import/no-dynamic-require": "off",
+    "strict": [ 2, "safe" ],
+		"no-underscore-dangle": "off",
+		"no-param-reassign": "off",
+		"no-debugger": 2,
+		"import/no-extraneous-dependencies": [
+      "error", {
+        "devDependencies": true
+      }
+    ],
+		"brace-style": [
+			2,
+			"1tbs",
+			{ "allowSingleLine": true }
+		],
+		"no-trailing-spaces": 2,
+		"keyword-spacing":    2,
+		"space-before-function-paren": [
+			2,
+			"never"
+		],
+		"spaced-comment": [2, "always" ],
+		"vars-on-top": 2,
+		"no-undef": 1,
+		"no-undefined": 2,
+		"no-restricted-globals": "off",
+		"comma-dangle": ["error", "only-multiline"],
+		"quotes": [ 2, "single" ],
+		"semi": [ 2, "always" ],
+		"guard-for-in": 2,
+		"no-eval": 2,
+		"no-with": 2,
+		"valid-typeof": 2,
+		"no-unused-vars": 2,
+		"no-continue": 1,
+		"no-extra-semi": 1,
+		"no-unreachable": 1,
+		"no-unused-expressions": 1,
+		"no-magic-numbers": "off",
+		"func-names": "off",
+    "no-plusplus": "off",
+    "no-extend-native": "off",
+    "no-continue": "off",
+    "no-loop-func": "off",
+    "no-restricted-syntax": "off",
+    "no-mixed-operators": "off",
+		"max-len": ["error", 300]
+  },
+  "globals": {
+    "describe": true,
+    "it": true,
+    "expect": true,
+    "app": true,
+    "td": true,
+    "beforeEach": true,
+    "request": true,
+    "Joi": true,
+    "joiAssert": true
+  }
+}

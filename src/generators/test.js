@@ -8,31 +8,6 @@ class TestGenerator {
 		this.testsPath = testsPath;
 	}
 
-	async createFoldersAndHelperFiles() {
-		try {
-			
-			if (!fs.existsSync(this.testsPath)) {
-				await fs.mkdirSync(this.testsPath);
-			} else {
-				await shell.rm('-rf', this.testsPath);
-				await fs.mkdirSync(this.testsPath);
-			}
-
-			await fs.mkdirSync(path.join(this.testsPath, '/integration'));
-			await fs.mkdirSync(path.join(this.testsPath, '/integration/routes'));
-			await fs.mkdirSync(path.join(this.testsPath, '/unit'));
-			await fs.mkdirSync(path.join(this.testsPath, '/unit/controllers'));
-			await fs.mkdirSync(path.join(this.testsPath, '/contract'));
-			await fs.mkdirSync(path.join(this.testsPath, '/contract/contracts'));
-
-			await Promise.all([this.createIntegrationHelpers(), this.createUnitHelpers(), this.createContractHelpers()]);
-
-			return true;
-		} catch (error) {
-			throw new Error(error);
-		}
-	}
-
 	async createIntegrationHelpers() {
 		const helperStream = fs.createWriteStream(path.join(this.testsPath, '/integration/helpers.js'));
 		helperStream.once('open', (fd) => {
