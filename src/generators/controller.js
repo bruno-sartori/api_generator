@@ -14,6 +14,7 @@ class ControllerGenerator {
 		const capitalize = (str) => {
 			return str.charAt(0).toUpperCase() + str.slice(1);
 		}
+		console.log(modelValues);
 
 		modelName = capitalize(modelName);
 

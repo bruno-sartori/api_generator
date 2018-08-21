@@ -5,6 +5,7 @@ import shell from 'shelljs';
 import _ from 'lodash';
 import ControllerGenerator from '../generators/controller';
 import RouteGenerator from '../generators/route';
+import ModelGenerator from '../generators/model';
 import TestGenerator from '../generators/test';
 
 class SequelizeParser {
@@ -20,6 +21,7 @@ class SequelizeParser {
 		this.controllerGenerator = new ControllerGenerator(controllersPath);
 		this.routeGenerator = new RouteGenerator(routesPath);
 		this.testGenerator = new TestGenerator(testsPath);
+		this.modelGenerator = new ModelGenerator(modelPath);
 	}
 
 	async createFoldersAndHelperFiles() {
@@ -69,6 +71,7 @@ class SequelizeParser {
  			await Promise.all([
 				this.controllerGenerator.generateFile(modelName, this.models[i].columns),
 				this.routeGenerator.generateFile(modelName, this.models[i].columns),
+				this.modelGenerator.generateFile(modelName, this.models[i].columns),
 				this.testGenerator.generate(modelName, this.models[i].columns)
 			]);
 		}

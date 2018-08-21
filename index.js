@@ -34,6 +34,7 @@ async function generate() {
 
 		return 'success';
 	} catch (error) {
+		console.log(error);
 		return error;
 	}
 }

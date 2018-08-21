@@ -10,13 +10,17 @@ class RouteGenerator {
 	async generateFile(modelName, modelValues) {
 		console.log(`Generating Route: ${modelName}`);
 
-		const controllerName = `${modelName}Controller`;
+		const capitalize = (str) => {
+			return str.charAt(0).toUpperCase() + str.slice(1);
+		}
+
+		const controllerName = `${capitalize(modelName)}Controller`;
 		const controllerVar = `${modelName.charAt(0).toLowerCase() + modelName.slice(1)}Controller`;
 		const routeName = modelName.replace( /([a-z])([A-Z])/g, '$1-$2' ).toLowerCase();
 
 		const stream = fs.createWriteStream(path.join(this.routesPath, `${modelName}.js`));
 		stream.once('open', (fd) => {
-		  stream.write(`import ${controllerName} from '../controllers/${modelName}';\n\n`);
+		  stream.write(`import ${controllerName} from '../controllers/${capitalize(modelName)}';\n\n`);
 			stream.write(`export default (app) => {\n`);
 			stream.write(`\tconst ${controllerVar} = new ${controllerName}(app.datasource.models.${modelName});\n\n`);
 			stream.write(`\tapp.route('/${routeName}*').all(app.auth.authenticate());\n\n`);
