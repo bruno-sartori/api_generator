@@ -98,6 +98,8 @@ class MysqlParser {
 		}
 
 		await this.generateFiles();
+
+		return true;
 	}
 
 	/**
@@ -111,12 +113,14 @@ class MysqlParser {
 		for (let i = 0; i < this.models.length; i++) {
 			const modelName = _.camelCase(this.models[i].name);
 			await Promise.all([
-				this.controllerGenerator.generateFile(modelName, this.models[i].columns),
+				this.controllerGenerator.generateFile(modelName, this.models[i].columns, (done) => done),
 				this.routeGenerator.generateFile(modelName, this.models[i].columns),
 				this.modelGenerator.generateFile(modelName, this.models[i].columns),
 				this.testGenerator.generate(modelName, this.models[i].columns)
 			]);
 		}
+
+		return true;
 	}
 }
 

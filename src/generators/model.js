@@ -72,22 +72,27 @@ class ModelGenerator {
 
 		modelName = capitalize(modelName);
 
-		const stream = fs.createWriteStream(path.join(this.modelsPath, `${modelName}.js`));
+		return new Promise((resolve, reject) => {
+			const stream = fs.createWriteStream(path.join(this.modelsPath, `${modelName}.js`));
 
-		stream.once('open', (fd) => {
-		  stream.write("export default (sequelize, DataType) => {\n");
-		  stream.write(`\tconst ${modelName} = sequelize.define('${modelName}',\n`);
-			stream.write('\t\t{\n');
+			stream.once('open', () => {
+				stream.write('export default (sequelize, DataType) => {\n');
+				stream.write(`\tconst ${modelName} = sequelize.define('${modelName}',\n`);
+				stream.write('\t\t{\n');
 
-			for(let i = 0; i < modelValues.length; i++) {
-				this.writeValue(stream, modelValues[i], (i === modelValues.length -1));
-			}
+				for (let i = 0; i < modelValues.length; i++) {
+					this.writeValue(stream, modelValues[i], (i === modelValues.length - 1));
+				}
 
-			stream.write('\t\t}\n');
-			stream.write('\t);\n');
-			stream.write(`\treturn ${modelName};\n`);
-			stream.write('};\n');
-			stream.end();
+				stream.write('\t\t}\n');
+				stream.write('\t);\n');
+				stream.write(`\treturn ${modelName};\n`);
+				stream.write('};\n');
+				stream.end();
+			});
+
+			stream.on('finish', () => { console.log(`generated  src/models/${modelName}.js`); resolve(); });
+			stream.on('error', () => reject());
 		});
 	}
 }

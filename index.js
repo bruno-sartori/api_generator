@@ -31,11 +31,12 @@ async function generate() {
 
 		await parser.createFoldersAndHelperFiles();
 		await parser.parseDatabase();
+		console.log('success');
 
-		return 'success';
+		process.exit(0);
 	} catch (error) {
 		console.log(error);
-		return error;
+		process.exit(1);
 	}
 }
 
