@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import chalk from 'chalk';
 
 /**
 * Esta classe é responsável por criar os arquivos de models do projeto.
@@ -59,8 +60,6 @@ class ModelGenerator {
 	* @param {Array} modelValues - array contendo os nomes e tipos dos campos.
 	*/
 	async generateFile(modelName, modelValues) {
-		console.log(`Generating Model: ${modelName}`);
-
 		/**
 		* Altera a string para ter letra maiúscula na primeira letra.
 		*
@@ -91,9 +90,13 @@ class ModelGenerator {
 				stream.end();
 			});
 
-			stream.on('finish', () => { console.log(`generated  src/models/${modelName}.js`); resolve(); });
+			stream.on('finish', () => { this.finishLog(modelName); resolve(); });
 			stream.on('error', () => reject());
 		});
+	}
+
+	finishLog(modelName) {
+		return console.log(`[${chalk.blue('models')}] ${chalk.gray(`generated on src/models/${modelName}.js`)}`); // eslint-disable-line
 	}
 }
 

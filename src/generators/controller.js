@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import chalk from 'chalk';
 
 /**
 * Esta classe é responsável por criar os arquivos de controllers do projeto.
@@ -28,8 +29,6 @@ class ControllerGenerator {
 	* @todo Substituir método getAll por list com suporte ao DataTables do React (Usará o modelValues)
 	*/
 	async generateFile(modelName, modelValues) {
-		console.log(`Generating:  src/controllers/${modelName}.js ...`);
-
 		/**
 		* Altera a string para ter letra maiúscula na primeira letra.
 		*
@@ -94,9 +93,13 @@ class ControllerGenerator {
 				stream.end();
 			});
 
-			stream.on('finish', () => { console.log(`generated  src/controllers/${modelName}.js`); resolve(); });
+			stream.on('finish', () => { this.finishLog(modelName); resolve(); });
 			stream.on('error', () => reject());
 		});
+	}
+
+	finishLog(modelName) {
+		return console.log(`[${chalk.blue('controllers')}] ${chalk.gray(`generated on src/controllers/${modelName}.js`)}`); // eslint-disable-line
 	}
 }
 

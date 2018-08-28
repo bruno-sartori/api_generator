@@ -2,10 +2,12 @@
 
 const Sequelize = require('sequelize');
 const path = require('path');
+const shell = require('shelljs');
+const inquirer = require('inquirer');
 const MysqlParser = require('./src/parsers/mysql').default;
 
 if (typeof process.argv[2] === 'undefined') {
-	console.log('Usage: apigen [PROJECT_PATH] [DB_NAME] [DB_HOST] [DB_USER] [DB_PASSWORD]');
+	console.log('Usage: apigen [PROJECT_PATH]');
 	process.exit(1);
 }
 
@@ -15,23 +17,22 @@ const controllersPath = path.join(rootPath, '/src/controllers/');
 const routesPath = path.join(rootPath, '/src/routes/');
 const testPath = path.join(rootPath, '/test/');
 
-const dbName = process.argv[3];
-const dbHost = process.argv[4];
-const dbUser = process.argv[5];
-const dbPassword = process.argv[6];
-
 /**
 *
 * @todo criar uma pasta /utils e colocar funções utilizados em ambos arquivos como capitalize()
 */
-async function generate() {
+async function generate(answers) {
 	try {
+
+		const { dbName, dbUser, dbPassword, dbHost } = answers;
 		const sequelize = new Sequelize(dbName, dbUser, dbPassword, {	host: dbHost, dialect: 'mysql' });
 		const parser = new MysqlParser(rootPath, modelPath, controllersPath, routesPath, testPath, sequelize, dbName);
 
 		await parser.createFoldersAndHelperFiles();
 		await parser.parseDatabase();
 		console.log('success');
+
+		await shell.exec(`npm install --prefix ${rootPath}`);
 
 		process.exit(0);
 	} catch (error) {
@@ -40,4 +41,17 @@ async function generate() {
 	}
 }
 
-generate();
+async function start() {
+	const questions = [
+		{ name: 'appName', message: 'Application Name?', default: 'API'	},
+		{ name: 'dbName', message: 'Database Name?', default: 'isp_1' },
+		{ name: 'dbHost', message: 'Database Host?', default: 'localhost' },
+		{ name: 'dbUser', message: 'Database User?', default: 'root' },
+		{ name: 'dbPassword', message: 'Database Password?', default: 'root' }
+	];
+	const answers = await inquirer.prompt(questions, (answer) => answer);
+
+	await generate(answers);
+}
+
+start();

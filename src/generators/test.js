@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import chalk from 'chalk';
 
 /**
 * Esta classe é responsável por criar os arquivos de testes de integração do projeto.
@@ -217,9 +218,13 @@ class TestGenerator {
 				stream.end();
 			});
 
-			stream.on('finish', () => { console.log(`generated  test/integration/routes/${modelName}.js`); resolve(); });
+			stream.on('finish', () => { this.finishLog(modelName); resolve(); });
 			stream.on('error', () => reject());
 		});
+	}
+
+	finishLog(modelName) {
+		return console.log(`[${chalk.blue('integrations tests')}] ${chalk.gray(`generated on test/integration/routes/${modelName}.js`)}`); // eslint-disable-line
 	}
 }
 

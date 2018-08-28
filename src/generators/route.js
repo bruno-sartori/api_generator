@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import chalk from 'chalk';
 
 /**
 * Esta classe é responsável por criar os arquivos de rotas do projeto.
@@ -28,8 +29,6 @@ class RouteGenerator {
 	* @todo Substituir método getAll por list e adicionar parâmetro de página
 	*/
 	async generateFile(modelName, modelValues) {
-		console.log(`Generating Route: ${modelName}`);
-
 		/**
 		* Altera a string para ter letra maiúscula na primeira letra.
 		*
@@ -95,9 +94,13 @@ class RouteGenerator {
 				stream.end();
 			});
 
-			stream.on('finish', () => { console.log(`generated  src/routes/${modelName}.js`); resolve(); });
+			stream.on('finish', () => { this.finishLog(modelName); resolve(); });
 			stream.on('error', () => reject());
 		});
+	}
+
+	finishLog(modelName) {
+		return console.log(`[${chalk.blue('routes')}] ${chalk.gray(`generated on src/routes/${modelName}.js`)}`); // eslint-disable-line
 	}
 }
 
