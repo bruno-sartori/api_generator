@@ -33,7 +33,7 @@ async function generate(answers) {
 		await parser.parseDatabase();
 
 		const dots = icons.dots;
-		const spinner = ora({ spinner: 'dots', stream: console.log, text: 'Running npm install' }); // eslint-disable-line
+		const spinner = ora({ spinner: 'dots', stream: process.stdout, text: 'Running npm install' }); // eslint-disable-line
 
 		spinner.start();
 
