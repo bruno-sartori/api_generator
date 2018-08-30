@@ -5,6 +5,8 @@ const path = require('path');
 const shell = require('shelljs');
 const inquirer = require('inquirer');
 const MysqlParser = require('./src/parsers/mysql').default;
+const icons = require('cli-spinners');
+const ora = require('ora');
 
 if (typeof process.argv[2] === 'undefined') {
 	console.log('Usage: apigen [PROJECT_PATH]');
@@ -23,16 +25,19 @@ const testPath = path.join(rootPath, '/test/');
 */
 async function generate(answers) {
 	try {
-
 		const { dbName, dbUser, dbPassword, dbHost } = answers;
 		const sequelize = new Sequelize(dbName, dbUser, dbPassword, {	host: dbHost, dialect: 'mysql' });
 		const parser = new MysqlParser(rootPath, modelPath, controllersPath, routesPath, testPath, sequelize, dbName);
 
 		await parser.createFoldersAndHelperFiles();
 		await parser.parseDatabase();
-		console.log('success');
 
-		await shell.exec(`npm install --prefix ${rootPath}`);
+		const dots = icons.dots;
+		const spinner = ora({ spinner: 'dots', stream: console.log, text: 'Running npm install' }); // eslint-disable-line
+
+		spinner.start();
+
+		await shell.exec(`npm install --prefix ${rootPath}`, { silent: true });
 
 		process.exit(0);
 	} catch (error) {
