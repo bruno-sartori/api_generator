@@ -5,11 +5,13 @@ const path = require('path');
 const shell = require('shelljs');
 const inquirer = require('inquirer');
 const MysqlParser = require('./src/parsers/mysql').default;
-const icons = require('cli-spinners');
-const ora = require('ora');
+const Multispinner = require('multispinner');
+const chalk = require('chalk');
+// const icons = require('cli-spinners');
+// const ora = require('ora');
 
 if (typeof process.argv[2] === 'undefined') {
-	console.log('Usage: apigen [PROJECT_PATH]');
+	console.log(`${chalk.blue('Usage:')} apigen [${chalk.green('PROJECT_PATH')}]`);
 	process.exit(1);
 }
 
@@ -19,6 +21,37 @@ const controllersPath = path.join(rootPath, '/src/controllers/');
 const routesPath = path.join(rootPath, '/src/routes/');
 const testPath = path.join(rootPath, '/test/');
 
+function runNpmInstall() {
+	return new Promise((resolve) => {
+		shell.exec(`npm install --prefix ${rootPath}`, { silent: true }, () => {
+			resolve();
+		});
+	});
+}
+
+function load() {
+	const spinner = new Multispinner(['1'], {
+		preText: `${chalk.green('Running \`')}${chalk.gray('npm install')}${chalk.green('\`')}`,
+		frames: ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'],
+		indent: 0,
+		color: {
+			incomplete: 'cyan',
+			success: 'green',
+			error: 'red'
+		}
+	});
+
+	runNpmInstall().then(() => {
+		spinner.success('1');
+		process.exit(0);
+	}).catch(() => {
+		spinner.error('1');
+		process.exit(1);
+	});
+
+	return;
+}
+
 /**
 *
 * @todo criar uma pasta /utils e colocar funções utilizados em ambos arquivos como capitalize()
@@ -26,23 +59,13 @@ const testPath = path.join(rootPath, '/test/');
 async function generate(answers) {
 	try {
 		const { dbName, dbUser, dbPassword, dbHost } = answers;
-		const sequelize = new Sequelize(dbName, dbUser, dbPassword, {	host: dbHost, dialect: 'mysql' });
+		const sequelize = new Sequelize(dbName, dbUser, dbPassword, {	host: dbHost, dialect: 'mysql', logging: false });
 		const parser = new MysqlParser(rootPath, modelPath, controllersPath, routesPath, testPath, sequelize, dbName);
 
 		await parser.createFoldersAndHelperFiles();
 		await parser.parseDatabase();
-
-		const dots = icons.dots;
-		const spinner = ora({ spinner: 'dots', stream: process.stdout, text: 'Running npm install' }); // eslint-disable-line
-
-		spinner.start();
-
-		await shell.exec(`npm install --prefix ${rootPath}`, { silent: true });
-
-		process.exit(0);
 	} catch (error) {
-		console.log(error);
-		process.exit(1);
+		console.log(error); // eslint-disable-line
 	}
 }
 
@@ -54,9 +77,17 @@ async function start() {
 		{ name: 'dbUser', message: 'Database User?', default: 'root' },
 		{ name: 'dbPassword', message: 'Database Password?', default: 'root' }
 	];
-	const answers = await inquirer.prompt(questions, (answer) => answer);
+	const npmQuestions = [{ name: 'runNpm', message: 'Run npm install now?', type: 'confirm' }];
 
+	const answers = await inquirer.prompt(questions, (answer) => answer);
 	await generate(answers);
+
+	const npmAnswers = await inquirer.prompt(npmQuestions, (answer) => answer);
+	return npmAnswers;
 }
 
-start();
+start().then((npmAnswers) => {
+	if (npmAnswers) {
+		load();
+	}
+});

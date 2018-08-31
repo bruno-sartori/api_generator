@@ -224,7 +224,7 @@ class TestGenerator {
 	}
 
 	finishLog(modelName) {
-		return console.log(`[${chalk.blue('integrations tests')}] ${chalk.gray(`generated on test/integration/routes/${modelName}.js`)}`); // eslint-disable-line
+		return console.log(`[${chalk.green('generating:')}] ${chalk.gray(`test/integration/routes/${modelName}.js`)}`); // eslint-disable-line
 	}
 }
 

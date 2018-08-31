@@ -1,6 +1,7 @@
 import path from 'path';
 import shell from 'shelljs';
 import _ from 'lodash';
+import chalk from 'chalk';
 import ControllerGenerator from '../generators/controller';
 import RouteGenerator from '../generators/route';
 import ModelGenerator from '../generators/model';
@@ -50,6 +51,7 @@ class MysqlParser {
 		try {
 			await shell.rm('-rf', `${this.rootPath}/*`);
 			await shell.cp('-r', path.join(__dirname, '../files/*'), this.rootPath);
+			await shell.cp('-r', path.join(__dirname, '../files/.*'), this.rootPath);
 			return true;
 		} catch (error) {
 			throw new Error(error);
@@ -70,7 +72,16 @@ class MysqlParser {
 			decimal: 'FLOAT'
 		};
 
+		/*
+		int(10) unsigned
+varchar(255)
+decimal(15,2)
+tinyint(1)
+*/
+
 		let trueType = type.match(/.+?(?=\()/);
+
+		console.log(trueType);
 
 		trueType = (trueType === null) ? type : trueType[0];
 
@@ -89,6 +100,8 @@ class MysqlParser {
 		const tables = await this.db.getQueryInterface().showAllSchemas();
 
 		for (let i = 0; i < tables.length; i++) {
+			console.log(`[${chalk.blue('parsing:')}] ${chalk.gray(table)}`); // eslint-disable-line
+
 			const table = tables[i][`Tables_in_${this.dbName}`];
 			const columns = await this.db.query(`show columns from ${table}`);
 

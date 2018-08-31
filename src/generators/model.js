@@ -43,7 +43,8 @@ class ModelGenerator {
 		stream.write(`\t\t\t\ttype: DataType.${value.type},\n`);
 		stream.write('\t\t\t\tallowNull: false,\n');
 		stream.write('\t\t\t\tvalidate: {\n');
-		stream.write('\t\t\t\tnotEmpty: true\n');
+		stream.write('\t\t\t\t\tnotEmpty: true\n');
+		stream.write('\t\t\t\t}');
 
 		if (last) {
 			stream.write('\t\t\t}\n');
@@ -96,7 +97,7 @@ class ModelGenerator {
 	}
 
 	finishLog(modelName) {
-		return console.log(`[${chalk.blue('models')}] ${chalk.gray(`generated on src/models/${modelName}.js`)}`); // eslint-disable-line
+		return console.log(`[${chalk.green('generating:')}] ${chalk.gray(`src/models/${modelName}.js`)}`); // eslint-disable-line
 	}
 }
 

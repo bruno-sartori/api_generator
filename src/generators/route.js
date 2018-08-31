@@ -100,7 +100,7 @@ class RouteGenerator {
 	}
 
 	finishLog(modelName) {
-		return console.log(`[${chalk.blue('routes')}] ${chalk.gray(`generated on src/routes/${modelName}.js`)}`); // eslint-disable-line
+		return console.log(`[${chalk.green('generating:')}] ${chalk.gray(`src/routes/${modelName}.js`)}`); // eslint-disable-line
 	}
 }
 
