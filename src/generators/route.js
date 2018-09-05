@@ -46,6 +46,14 @@ class RouteGenerator {
 		const controllerName = `${capitalize(modelName)}Controller`;
 
 		/**
+		* Nome do arquivo do controler que será importado.
+		*
+		* @type {String}
+		*/
+		const controllerFileName = capitalize(modelName);
+
+
+		/**
 		* Nome da variável que receberá a instância do controller
 		*
 		* @type {String}
@@ -64,9 +72,9 @@ class RouteGenerator {
 		return new Promise((resolve, reject) => {
 			const stream = fs.createWriteStream(path.join(this.routesPath, `${modelName}.js`));
 			stream.once('open', () => {
-				stream.write(`import ${controllerName} from '../controllers/${capitalize(modelName)}';\n\n`);
+				stream.write(`import ${controllerName} from '../controllers/${controllerFileName}';\n\n`);
 				stream.write('export default (app) => {\n');
-				stream.write(`\tconst ${controllerVar} = new ${controllerName}(app.datasource.models.${modelName});\n\n`);
+				stream.write(`\tconst ${controllerVar} = new ${controllerName}(app.datasource.models.${capitalize(modelName)});\n\n`);
 				stream.write(`\tapp.route('/${routeName}*').all(app.auth.authenticate());\n\n`);
 				stream.write(`\tapp.route('/${routeName}')\n`);
 				stream.write('\t.get(async (req, res) => {\n');

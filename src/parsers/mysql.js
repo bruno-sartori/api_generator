@@ -24,16 +24,18 @@ class MysqlParser {
 	* @param {String} testsPath - Diretório de testes
 	* @param {Object} sequelize - Classe de conexão com o banco de dados (Sequelize)
 	* @param {String} dbName - nome do banco de dados
+	* @param {String} excludeTables - Tabelas para serem excluídas do parser
 	*
 	* @todo Trazer todos os paths em um unico objeto
 	* @todo criar a conexão com o banco de dados dentro desta classe (Cada parser terá sua própria conexão)
 	*/
-	constructor(rootPath, modelPath, controllersPath, routesPath, testsPath, sequelize, dbName) {
+	constructor(rootPath, modelPath, controllersPath, routesPath, testsPath, sequelize, dbName, excludeTables) {
 		this.db = sequelize;
 		this.dbName = dbName;
 		this.models = [];
 		this.rootPath = rootPath;
 		this.modelPath = modelPath;
+		this.excludeTables = excludeTables.split('|');
 
 		this.controllerGenerator = new ControllerGenerator(controllersPath);
 		this.routeGenerator = new RouteGenerator(routesPath);
@@ -69,19 +71,12 @@ class MysqlParser {
 			int: 'INTEGER',
 			varchar: 'STRING',
 			tinyint: 'BOOLEAN',
-			decimal: 'FLOAT'
+			decimal: 'FLOAT',
+			float: 'FLOAT',
+			text: 'STRING'
 		};
 
-		/*
-		int(10) unsigned
-varchar(255)
-decimal(15,2)
-tinyint(1)
-*/
-
 		let trueType = type.match(/.+?(?=\()/);
-
-		console.log(trueType);
 
 		trueType = (trueType === null) ? type : trueType[0];
 
@@ -103,11 +98,16 @@ tinyint(1)
 			console.log(`[${chalk.blue('parsing:')}] ${chalk.gray(table)}`); // eslint-disable-line
 
 			const table = tables[i][`Tables_in_${this.dbName}`];
-			const columns = await this.db.query(`show columns from ${table}`);
 
-			const modelColumns = await columns[0].map(o => ({ name: o.Field, type: this.getType(o.Type) }));
+			if (this.excludeTables.includes(table)) {
+				console.log(`[${chalk.blue('excluding table:')}] ${chalk.green(table)}`);
+			} else {
+				const columns = await this.db.query(`show columns from ${table}`);
 
-			this.models.push({ name: table, columns: modelColumns });
+				const modelColumns = await columns[0].map(o => ({ name: o.Field, type: this.getType(o.Type) }));
+
+				this.models.push({ name: table, columns: modelColumns });
+			}
 		}
 
 		await this.generateFiles();
@@ -128,7 +128,7 @@ tinyint(1)
 			await Promise.all([
 				this.controllerGenerator.generateFile(modelName, this.models[i].columns, (done) => done),
 				this.routeGenerator.generateFile(modelName, this.models[i].columns),
-				this.modelGenerator.generateFile(modelName, this.models[i].columns),
+				this.modelGenerator.generateFile(modelName, this.models[i].columns, this.models[i].name),
 				this.testGenerator.generate(modelName, this.models[i].columns)
 			]);
 		}

@@ -54,7 +54,7 @@ class ControllerGenerator {
 
 				stream.write('\tgetAll() {\n');
 				stream.write(`\t\treturn this.${modelName}.findAll({})\n`);
-				stream.write('\t\t.then(result => defaultResponse(result))\n');
+				stream.write('\t\t.then(result => defaultResponse({}, result))\n');
 				stream.write('\t\t.catch(error => errorResponse(error.message));\n');
 				stream.write('\t}\n\n');
 
@@ -62,13 +62,13 @@ class ControllerGenerator {
 				stream.write(`\t\treturn this.${modelName}.findOne({\n`);
 				stream.write('\t\t\twhere: params,\n');
 				stream.write('\t\t})\n');
-				stream.write('\t\t.then(result => defaultResponse(result))\n');
+				stream.write('\t\t.then(result => defaultResponse({}, result))\n');
 				stream.write('\t\t.catch(error => errorResponse(error.message));\n');
 				stream.write('\t}\n\n');
 
 				stream.write('\tcreate(data) {\n');
 				stream.write(`\t\treturn this.${modelName}.create(data)\n`);
-				stream.write('\t\t.then(result => defaultResponse(result, HttpStatus.CREATED))\n');
+				stream.write('\t\t.then(result => defaultResponse({}, result, HttpStatus.CREATED))\n');
 				stream.write('\t\t.catch(error => errorResponse(error.message, HttpStatus.UNPROCESSABLE_ENTITY));\n');
 				stream.write('\t}\n\n');
 
@@ -76,7 +76,7 @@ class ControllerGenerator {
 				stream.write(`\t\treturn this.${modelName}.update(data, {\n`);
 				stream.write('\t\t\twhere: params,\n');
 				stream.write('\t\t})\n');
-				stream.write('\t\t.then(result => defaultResponse(result))\n');
+				stream.write('\t\t.then(result => defaultResponse({}, result))\n');
 				stream.write('\t\t.catch(error => errorResponse(error.message, HttpStatus.UNPROCESSABLE_ENTITY));\n');
 				stream.write('\t}\n\n');
 
@@ -84,7 +84,7 @@ class ControllerGenerator {
 				stream.write(`\t\treturn this.${modelName}.destroy({\n`);
 				stream.write('\t\t\twhere: params,\n');
 				stream.write('\t\t})\n');
-				stream.write('\t\t.then(result => defaultResponse(result, HttpStatus.NO_CONTENT))\n');
+				stream.write('\t\t.then(result => defaultResponse({}, result, HttpStatus.NO_CONTENT))\n');
 				stream.write('\t\t.catch(error => errorResponse(error.message, HttpStatus.UNPROCESSABLE_ENTITY));\n');
 				stream.write('\t}\n\n');
 

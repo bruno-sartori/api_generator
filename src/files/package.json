@@ -4,7 +4,7 @@
   "description": "Lorem ipsum dolor sit amet",
   "main": "index.js",
   "scripts": {
-    "start": "NODE_ENV=development PORT=3002 DB_HOST=localhost DB_PASSWORD=root DB_NAME=oton_portal DB_USER=root babel-node index.js",
+    "start": "NODE_ENV=development PORT=3002 DB_HOST=localhost DB_PASSWORD=root DB_NAME=isp_1 DB_USER=root babel-node index.js",
     "test": "npm run lint && npm run test-unit && npm run test-integration && npm run test-contract",
     "test-integration": "NODE_ENV=test _mocha --opts test/integration/mocha.opts test/integration/**/*.js",
     "test-unit": "NODE_ENV=test _mocha --opts test/unit/mocha.opts test/unit/**/*.js",
@@ -49,6 +49,7 @@
     "cors": "^2.8.4",
     "dotenv": "^6.0.0",
     "express": "^4.15.3",
+		"bcrypt": "^3.0.0",
     "express-fileupload": "^0.4.0",
     "fs": "0.0.1-security",
     "helmet": "^3.12.1",

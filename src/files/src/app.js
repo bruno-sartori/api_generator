@@ -26,14 +26,18 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(compression());
 app.use(cors({
 	origin: (origin, callback) => {
-		const whitelist = ['localhost:8080'];
-		if (whitelist.indexOf(origin) !== -1 || process.env.NODE_ENV === 'test') {
+	/*
+	* uncomment this when you have a client app
+	*/
+
+	//	const whitelist = ['localhost:8080'];
+	//	if (whitelist.indexOf(origin) !== -1 || process.env.NODE_ENV === 'test') {
 			callback(null, true);
-		} else {
-			const errorText = `Not allowed by CORS, origin: ${origin}`;
-			app.logger.error(errorText);
-			callback(new Error(errorText));
-		}
+	//	} else {
+	//		const errorText = `Not allowed by CORS, origin: ${origin}`;
+	//		app.logger.error(errorText);
+	//		callback(new Error(errorText));
+	//	}
 	}
 }));
 

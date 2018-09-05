@@ -44,7 +44,7 @@ class ModelGenerator {
 		stream.write('\t\t\t\tallowNull: false,\n');
 		stream.write('\t\t\t\tvalidate: {\n');
 		stream.write('\t\t\t\t\tnotEmpty: true\n');
-		stream.write('\t\t\t\t}');
+		stream.write('\t\t\t\t}\n');
 
 		if (last) {
 			stream.write('\t\t\t}\n');
@@ -60,7 +60,7 @@ class ModelGenerator {
 	* @param {String} modelName - nome do Model.
 	* @param {Array} modelValues - array contendo os nomes e tipos dos campos.
 	*/
-	async generateFile(modelName, modelValues) {
+	async generateFile(modelName, modelValues, tableName) {
 		/**
 		* Altera a string para ter letra maiúscula na primeira letra.
 		*
@@ -84,6 +84,9 @@ class ModelGenerator {
 					this.writeValue(stream, modelValues[i], (i === modelValues.length - 1));
 				}
 
+				stream.write('\t\t},\n');
+				stream.write('\t\t{\n');
+				stream.write(`\t\t\ttableName: '${tableName}'\n`);
 				stream.write('\t\t}\n');
 				stream.write('\t);\n');
 				stream.write(`\treturn ${modelName};\n`);
