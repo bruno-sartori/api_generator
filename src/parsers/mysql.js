@@ -54,8 +54,8 @@ class MysqlParser {
 	async createFoldersAndHelperFiles() {
 		try {
 			await shell.rm('-rf', `${this.rootPath}/*`);
-			await shell.cp('-r', path.join(__dirname, '../files/*'), this.rootPath);
-			await shell.cp('-r', path.join(__dirname, '../files/.*'), this.rootPath);
+			await shell.cp('-r', path.join(__dirname, '../files/back-nodejs/*'), this.rootPath);
+			await shell.cp('-r', path.join(__dirname, '../files/back-nodejs/.*'), this.rootPath);
 			return true;
 		} catch (error) {
 			throw new Error(error);
