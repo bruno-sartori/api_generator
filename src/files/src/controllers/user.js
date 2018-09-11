@@ -1,13 +1,5 @@
 import HttpStatus from 'http-status';
-
-const defaultResponse = (data, statusCode = HttpStatus.OK) => ({
-	data,
-	statusCode,
-});
-
-const errorResponse = (message, statusCode = HttpStatus.BAD_REQUEST) => defaultResponse({
-	error: message,
-}, statusCode);
+import { defaultResponse, errorResponse } from '../util/responses';
 
 class UserController {
 	constructor(User) {
@@ -16,7 +8,7 @@ class UserController {
 
 	getAll() {
 		return this.User.findAll({})
-		.then(result => defaultResponse(result))
+		.then(result => defaultResponse({}, result))
 		.catch(error => errorResponse(error.message));
 	}
 
@@ -24,13 +16,13 @@ class UserController {
 		return this.User.findOne({
 			where: params,
 		})
-		.then(result => defaultResponse(result))
+		.then(result => defaultResponse({}, result))
 		.catch(error => errorResponse(error.message));
 	}
 
 	create(data) {
 		return this.User.create(data)
-		.then(result => defaultResponse(result, HttpStatus.CREATED))
+		.then(result => defaultResponse({}, result, HttpStatus.CREATED))
 		.catch(error => errorResponse(error.message, HttpStatus.UNPROCESSABLE_ENTITY));
 	}
 
@@ -38,7 +30,7 @@ class UserController {
 		return this.User.update(data, {
 			where: params,
 		})
-		.then(result => defaultResponse(result))
+		.then(result => defaultResponse({}, result))
 		.catch(error => errorResponse(error.message, HttpStatus.UNPROCESSABLE_ENTITY));
 	}
 
@@ -46,7 +38,7 @@ class UserController {
 		return this.User.destroy({
 			where: params,
 		})
-		.then(result => defaultResponse(result, HttpStatus.NO_CONTENT))
+		.then(result => defaultResponse({}, result, HttpStatus.NO_CONTENT))
 		.catch(error => errorResponse(error.message, HttpStatus.UNPROCESSABLE_ENTITY));
 	}
 }

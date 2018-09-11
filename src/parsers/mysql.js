@@ -6,6 +6,7 @@ import ControllerGenerator from '../generators/controller';
 import RouteGenerator from '../generators/route';
 import ModelGenerator from '../generators/model';
 import TestGenerator from '../generators/test';
+import AccessControlGenerator from '../generators/access_control';
 
 /**
 * Esta classe é responsável por realizar o parsing de um banco de dados MYSQL
@@ -41,6 +42,7 @@ class MysqlParser {
 		this.routeGenerator = new RouteGenerator(routesPath);
 		this.testGenerator = new TestGenerator(testsPath);
 		this.modelGenerator = new ModelGenerator(modelPath);
+		this.accessControlGenerator = new AccessControlGenerator(rootPath, routesPath);
 	}
 
 	/**
@@ -131,6 +133,8 @@ class MysqlParser {
 				this.modelGenerator.generateFile(modelName, this.models[i].columns, this.models[i].name),
 				this.testGenerator.generate(modelName, this.models[i].columns)
 			]);
+
+			await this.accessControlGenerator.addAccessControlInController(modelName);
 		}
 
 		return true;
