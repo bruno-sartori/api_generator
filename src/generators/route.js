@@ -103,7 +103,7 @@ class RouteGenerator {
 			});
 
 			stream.on('finish', () => { this.finishLog(modelName); resolve(); });
-			stream.on('error', () => reject());
+			stream.on('error', (error) => reject(error));
 		});
 	}
 

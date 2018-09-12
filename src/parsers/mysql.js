@@ -5,7 +5,7 @@ import chalk from 'chalk';
 import ControllerGenerator from '../generators/controller';
 import RouteGenerator from '../generators/route';
 import ModelGenerator from '../generators/model';
-import TestGenerator from '../generators/test';
+import IntegrationTestGenerator from '../generators/integrationTest';
 import AccessControlGenerator from '../generators/access_control';
 
 /**
@@ -40,7 +40,7 @@ class MysqlParser {
 
 		this.controllerGenerator = new ControllerGenerator(controllersPath);
 		this.routeGenerator = new RouteGenerator(routesPath);
-		this.testGenerator = new TestGenerator(testsPath);
+		this.integrationTestGenerator = new IntegrationTestGenerator(testsPath);
 		this.modelGenerator = new ModelGenerator(modelPath);
 		this.accessControlGenerator = new AccessControlGenerator(rootPath, routesPath);
 	}
@@ -95,24 +95,24 @@ class MysqlParser {
 	*/
 	async parseDatabase() {
 		const tables = await this.db.getQueryInterface().showAllSchemas();
-
+		console.log(tables.length);
 		for (let i = 0; i < tables.length; i++) {
-			console.log(`[${chalk.blue('parsing:')}] ${chalk.gray(table)}`); // eslint-disable-line
-
+			console.log(i);
 			const table = tables[i][`Tables_in_${this.dbName}`];
-
+			console.log(`[${chalk.blue('parsing:')}] ${chalk.gray(table)}`); // eslint-disable-line
 			if (this.excludeTables.includes(table)) {
 				console.log(`[${chalk.blue('excluding table:')}] ${chalk.green(table)}`);
 			} else {
 				const columns = await this.db.query(`show columns from ${table}`);
-
 				const modelColumns = await columns[0].map(o => ({ name: o.Field, type: this.getType(o.Type) }));
 
 				this.models.push({ name: table, columns: modelColumns });
 			}
 		}
 
-		await this.generateFiles();
+		if (this.models.length > 0) {
+			await this.generateFiles();
+		}
 
 		return true;
 	}
@@ -125,19 +125,24 @@ class MysqlParser {
 	* @return void
 	*/
 	async generateFiles() {
-		for (let i = 0; i < this.models.length; i++) {
-			const modelName = _.camelCase(this.models[i].name);
-			await Promise.all([
-				this.controllerGenerator.generateFile(modelName, this.models[i].columns, (done) => done),
-				this.routeGenerator.generateFile(modelName, this.models[i].columns),
-				this.modelGenerator.generateFile(modelName, this.models[i].columns, this.models[i].name),
-				this.testGenerator.generate(modelName, this.models[i].columns)
-			]);
+		try {
+			for (let i = 0; i < this.models.length; i++) {
+				const modelName = _.camelCase(this.models[i].name);
+				await Promise.all([
+					this.controllerGenerator.generateFile(modelName, this.models[i].columns, (done) => done),
+					this.routeGenerator.generateFile(modelName, this.models[i].columns),
+					this.modelGenerator.generateFile(modelName, this.models[i].columns, this.models[i].name),
+					this.integrationTestGenerator.generateFile(modelName, this.models[i].columns)
+				]);
 
-			await this.accessControlGenerator.addAccessControlInController(modelName);
+				// await this.accessControlGenerator.addAccessControlInController(modelName);
+			}
+
+			return true;
+		} catch (error) {
+			console.log("OUTRO ERRO" + error);
+			throw error;
 		}
-
-		return true;
 	}
 }
 

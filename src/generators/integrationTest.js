@@ -11,7 +11,7 @@ import chalk from 'chalk';
 * @todo Originalmente este arquivo criaria os 3 testes: Integração, Unidade e Contrato.
 * Atualizar o arquivo para criar somente o teste de integração.
 */
-class TestGenerator {
+class IntegrationTestGenerator {
 
 	/**
 	* Construtor da classe
@@ -22,15 +22,6 @@ class TestGenerator {
 		this.testsPath = testsPath;
 	}
 
-	/**
-	* Chama funções para criar testes de integração, unidade e contrato
-	*
-	* @param {String} modelName - nome do model atual.
-	* @param {Array} modelValues - array com os nomes e tipos dos campos do model.
-	*/
-	async generate(modelName, modelValues) {
-		await Promise.all([this.generateIntegration(modelName, modelValues)]);// , this.generateUnit(), this.generateContract()]);
-	}
 
 	/**
 	* Cria valores aleatórios para os testes
@@ -109,7 +100,7 @@ class TestGenerator {
 	*
 	* @todo Alterar o nome do método para generateFile
 	*/
-	async generateIntegration(modelName, modelValues) {
+	async generateFile(modelName, modelValues) {
 		/**
 		* Rota principal deste teste, será concatenado com o resto da rota
 		* em cada função do arquivo.
@@ -128,6 +119,7 @@ class TestGenerator {
 
 		return new Promise((resolve, reject) => {
 			const stream = fs.createWriteStream(path.join(this.testsPath, `/integration/routes/${modelName}.js`));
+
 			stream.once('open', () => {
 				stream.write('import HttpStatus from \'http-status\';\n');
 				stream.write('import jwt from \'jwt-simple\';\n\n');
@@ -219,7 +211,7 @@ class TestGenerator {
 			});
 
 			stream.on('finish', () => { this.finishLog(modelName); resolve(); });
-			stream.on('error', () => reject());
+			stream.on('error', (error) => reject(error));
 		});
 	}
 
@@ -228,4 +220,4 @@ class TestGenerator {
 	}
 }
 
-export default TestGenerator;
+export default IntegrationTestGenerator;
