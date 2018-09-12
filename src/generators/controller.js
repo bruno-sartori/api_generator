@@ -56,7 +56,7 @@ class ControllerGenerator {
 				stream.write('\t\ttry {\n');
 				stream.write(`\t\t\tconst response = await this.${modelName}.findAll({});\n`);
 				stream.write('\t\t\treturn defaultResponse({}, response);\n');
-				stream.write('\t\t} catch(error) {\n');
+				stream.write('\t\t} catch (error) {\n');
 				stream.write('\t\t\treturn errorResponse(error.message);\n');
 				stream.write('\t\t}\n');
 				stream.write('\t}\n\n');
@@ -75,27 +75,26 @@ class ControllerGenerator {
 				stream.write(`\t\t\tconst response = await this.${modelName}.create(data);\n`);
 				stream.write('\t\t\treturn defaultResponse({}, response, HttpStatus.CREATED);\n');
 				stream.write('\t\t} catch (error) {\n');
-				stream.write('\t\t\t return errorResponse(error.message);\n');
+				stream.write('\t\t\treturn errorResponse(error.message);\n');
 				stream.write('\t\t}\n');
 				stream.write('\t}\n\n');
 
 				stream.write('\tasync update(data, params) {\n');
 				stream.write('\t\ttry {\n');
-				stream.write(`\t\t\tconst response = await this.${modelName}.update(data, {\n`);
-				stream.write('\t\t\t\twhere: params,\n');
-				stream.write('\t\t\t});\n');
+				stream.write(`\t\t\tconst response = await this.${modelName}.update(data, { where: params });\n`);
 				stream.write('\t\t\treturn defaultResponse({}, response);\n');
 				stream.write('\t\t} catch (error) {\n');
-				stream.write('\t\t\t return errorResponse(error.message);\n');
+				stream.write('\t\t\treturn errorResponse(error.message);\n');
 				stream.write('\t\t}\n');
 				stream.write('\t}\n\n');
 
-				stream.write('\tdelete(params) {\n');
-				stream.write(`\t\treturn this.${modelName}.destroy({\n`);
-				stream.write('\t\t\twhere: params,\n');
-				stream.write('\t\t})\n');
-				stream.write('\t\t.then(result => defaultResponse({}, result, HttpStatus.NO_CONTENT))\n');
-				stream.write('\t\t.catch(error => errorResponse(error.message));\n');
+				stream.write('\tasync delete(params) {\n');
+				stream.write('\t\ttry {\n');
+				stream.write(`\t\t\tconst response = await this.${modelName}.destroy({ where: params });\n`);
+				stream.write('\t\t\treturn defaultResponse({}, response);\n');
+				stream.write('\t\t} catch (error) {\n');
+				stream.write('\t\t\treturn errorResponse(error.message);\n');
+				stream.write('\t\t}\n');
 				stream.write('\t}\n\n');
 
 				stream.write('}\n');
