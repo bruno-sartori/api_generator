@@ -8,7 +8,7 @@ export const defaultResponse = (meta, data = "", statusCode = HttpStatus.OK) => 
   statusCode,
 });
 
-export const errorResponse = (error, statusCode = HttpStatus.BAD_REQUEST) => {
+export const errorResponse = (error, statusCode = HttpStatus.UNPROCESSABLE_ENTITY) => {
 	logger.error(error);
 
 	return defaultResponse({

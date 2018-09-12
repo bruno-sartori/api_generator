@@ -45,39 +45,49 @@ class ControllerGenerator {
 
 			stream.once('open', () => {
 				stream.write('import HttpStatus from \'http-status\';\n');
-				stream.write('import { defaultResponse, ErrorResponse } from \'../util/responses\';\n\n');
+				stream.write('import { defaultResponse, errorResponse } from \'../util/responses\';\n\n');
 
 				stream.write(`class ${modelName}Controller {\n`);
 				stream.write(`\tconstructor(${modelName}) {\n`);
-				stream.write(`\t\t this.${modelName} = ${modelName};\n`);
+				stream.write(`\t\tthis.${modelName} = ${modelName};\n`);
 				stream.write('\t}\n\n');
 
-				stream.write('\tgetAll() {\n');
-				stream.write(`\t\treturn this.${modelName}.findAll({})\n`);
-				stream.write('\t\t.then(result => defaultResponse({}, result))\n');
-				stream.write('\t\t.catch(error => errorResponse(error.message));\n');
+				stream.write('\tasync getAll() {\n');
+				stream.write('\t\ttry {\n');
+				stream.write(`\t\t\tconst response = await this.${modelName}.findAll({});\n`);
+				stream.write('\t\t\treturn defaultResponse({}, response);\n');
+				stream.write('\t\t} catch(error) {\n');
+				stream.write('\t\t\treturn errorResponse(error.message);\n');
+				stream.write('\t\t}\n');
 				stream.write('\t}\n\n');
 
-				stream.write('\tgetById(params) {\n');
-				stream.write(`\t\treturn this.${modelName}.findOne({\n`);
-				stream.write('\t\t\twhere: params,\n');
-				stream.write('\t\t})\n');
-				stream.write('\t\t.then(result => defaultResponse({}, result))\n');
-				stream.write('\t\t.catch(error => errorResponse(error.message));\n');
+				stream.write('\tasync getById(params) {\n');
+				stream.write('\t\ttry {\n');
+				stream.write(`\t\t\tconst response = await this.${modelName}.findOne({ where: params });\n`);
+				stream.write('\t\t\treturn defaultResponse({}, response);\n');
+				stream.write('\t\t} catch (error) {\n');
+				stream.write('\t\t\treturn errorResponse(error.message);\n');
+				stream.write('\t\t}\n');
 				stream.write('\t}\n\n');
 
-				stream.write('\tcreate(data) {\n');
-				stream.write(`\t\treturn this.${modelName}.create(data)\n`);
-				stream.write('\t\t.then(result => defaultResponse({}, result, HttpStatus.CREATED))\n');
-				stream.write('\t\t.catch(error => errorResponse(error.message, HttpStatus.UNPROCESSABLE_ENTITY));\n');
+				stream.write('\tasync create(data) {\n');
+				stream.write('\t\ttry {\n');
+				stream.write(`\t\t\tconst response = await this.${modelName}.create(data);\n`);
+				stream.write('\t\t\treturn defaultResponse({}, response, HttpStatus.CREATED);\n');
+				stream.write('\t\t} catch (error) {\n');
+				stream.write('\t\t\t return errorResponse(error.message);\n');
+				stream.write('\t\t}\n');
 				stream.write('\t}\n\n');
 
-				stream.write('\tupdate(data, params) {\n');
-				stream.write(`\t\treturn this.${modelName}.update(data, {\n`);
-				stream.write('\t\t\twhere: params,\n');
-				stream.write('\t\t})\n');
-				stream.write('\t\t.then(result => defaultResponse({}, result))\n');
-				stream.write('\t\t.catch(error => errorResponse(error.message, HttpStatus.UNPROCESSABLE_ENTITY));\n');
+				stream.write('\tasync update(data, params) {\n');
+				stream.write('\t\ttry {\n');
+				stream.write(`\t\t\tconst response = await this.${modelName}.update(data, {\n`);
+				stream.write('\t\t\t\twhere: params,\n');
+				stream.write('\t\t\t});\n');
+				stream.write('\t\t\treturn defaultResponse({}, response);\n');
+				stream.write('\t\t} catch (error) {\n');
+				stream.write('\t\t\t return errorResponse(error.message);\n');
+				stream.write('\t\t}\n');
 				stream.write('\t}\n\n');
 
 				stream.write('\tdelete(params) {\n');
@@ -85,7 +95,7 @@ class ControllerGenerator {
 				stream.write('\t\t\twhere: params,\n');
 				stream.write('\t\t})\n');
 				stream.write('\t\t.then(result => defaultResponse({}, result, HttpStatus.NO_CONTENT))\n');
-				stream.write('\t\t.catch(error => errorResponse(error.message, HttpStatus.UNPROCESSABLE_ENTITY));\n');
+				stream.write('\t\t.catch(error => errorResponse(error.message));\n');
 				stream.write('\t}\n\n');
 
 				stream.write('}\n');
