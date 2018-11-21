@@ -33,7 +33,7 @@ async function start() {
 			}
 		];
 
-		const answers = await apigen.askQuestion(questions);
+		const answers = await apigen.getAnswers(questions);
 		await apigen.generate(answers);
 
 		const spinner1 = await apigen.load(`${chalk.blue('Adding table')} ${chalk.green('users')} ${chalk.blue('in your database')}`, ['1']);
@@ -42,7 +42,8 @@ async function start() {
 		const spinner2 = await apigen.load(`${chalk.green('Running \`')}${chalk.gray('npm install')}${chalk.green('\`')}`, ['2']);
 		await apigen.runNpmInstall(spinner2);
 
-		console.log("DONE");
+		console.log(`DONE`);
+
 		return true;
 	} catch (error) {
 		throw error;

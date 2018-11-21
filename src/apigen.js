@@ -44,7 +44,7 @@ class ApiGenerator {
 		return spinner;
 	}
 
-	async askQuestion(questions) {
+	async getAnswers(questions) {
 		const answers = await inquirer.prompt(questions, (answer) => answer);
 		return answers;
 	}
@@ -86,6 +86,7 @@ class ApiGenerator {
 			await this.sequelize.query('insert into users (id, name, email, password, createdAt, updatedAt) values(?, ?, ?, ?, ?, ?)', {
 				replacements: [1, 'Test', 'test@test.com', password, '2018-08-04 22:12:10', null]
 			});
+
 			spinner.success('1');
 			return true;
 		} catch (error) {
@@ -102,6 +103,7 @@ class ApiGenerator {
 		try {
 			const { dbName, dbUser, dbPassword, dbHost, excludeTables } = answers;
 			this.sequelize = new Sequelize(dbName, dbUser, dbPassword, {	host: dbHost, dialect: 'mysql', logging: false });
+
 			const parser = new MysqlParser(this.rootPath, this.modelPath, this.controllersPath, this.routesPath, this.testPath, this.sequelize, dbName, excludeTables);
 
 			await parser.createFoldersAndHelperFiles();

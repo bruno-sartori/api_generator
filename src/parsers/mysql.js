@@ -58,7 +58,7 @@ class MysqlParser {
 			await shell.cp('-r', path.join(__dirname, '../files/back-nodejs/.*'), this.rootPath);
 			return true;
 		} catch (error) {
-			throw new Error(error);
+			throw error;
 		}
 	}
 
@@ -85,6 +85,30 @@ class MysqlParser {
 		return types[trueType];
 	}
 
+	async getModel(table) {
+		const columns = await this.db.query(`show columns from ${table}`);
+		const modelColumns = await columns[0].map(o => ({ name: o.Field, type: this.getType(o.Type) }));
+		this.models.push({ name: table, columns: modelColumns });
+	}
+
+	async getModels() {
+		const tables = await this.db.getQueryInterface().showAllSchemas();
+
+		for (let i = 0; i < tables.length; i++) {
+			const table = tables[i][`Tables_in_${this.dbName}`];
+			console.log(`[${chalk.blue('parsing:')}] ${chalk.gray(table)}`); // eslint-disable-line
+			if (this.excludeTables.includes(table)) {
+				console.log(`[${chalk.blue('excluding table:')}] ${chalk.green(table)}`); // eslint-disable-line
+			} else {
+				await this.getModel(table);
+			}
+		}
+
+		if (this.models.length === 0) {
+			throw new Error('O banco de dados não possuí nenhuma tabela criada!');
+		}
+	}
+
 	/**
 	* Itera sobre todas as tabelas do banco provido pelo usuário e transforma em um Array de objetos
 	* no formato [{ name: "NOME_DA_TABELA", columns: [{ name: "NOME_DO_CAMPO", type: "TIPO_DO_CAMPO" }] }].
@@ -94,27 +118,13 @@ class MysqlParser {
 	* @return void
 	*/
 	async parseDatabase() {
-		const tables = await this.db.getQueryInterface().showAllSchemas();
-		console.log(tables.length);
-		for (let i = 0; i < tables.length; i++) {
-			console.log(i);
-			const table = tables[i][`Tables_in_${this.dbName}`];
-			console.log(`[${chalk.blue('parsing:')}] ${chalk.gray(table)}`); // eslint-disable-line
-			if (this.excludeTables.includes(table)) {
-				console.log(`[${chalk.blue('excluding table:')}] ${chalk.green(table)}`);
-			} else {
-				const columns = await this.db.query(`show columns from ${table}`);
-				const modelColumns = await columns[0].map(o => ({ name: o.Field, type: this.getType(o.Type) }));
-
-				this.models.push({ name: table, columns: modelColumns });
-			}
-		}
-
-		if (this.models.length > 0) {
+		try {
+			await this.getModels();
 			await this.generateFiles();
+			return true;
+		} catch (error) {
+			throw error;
 		}
-
-		return true;
 	}
 
 	/**
@@ -128,6 +138,7 @@ class MysqlParser {
 		try {
 			for (let i = 0; i < this.models.length; i++) {
 				const modelName = _.camelCase(this.models[i].name);
+
 				await Promise.all([
 					this.controllerGenerator.generateFile(modelName, this.models[i].columns, (done) => done),
 					this.routeGenerator.generateFile(modelName, this.models[i].columns),
